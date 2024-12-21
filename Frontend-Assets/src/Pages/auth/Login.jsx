@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-vars */
-import { signInWithRedirect, getRedirectResult } from 'firebase/auth';
+import { signInWithRedirect, getRedirectResult, signInWithPopup } from 'firebase/auth';
 import React, { useEffect, useState } from 'react';
 import { auth, googleProvider } from '../../firebase/firebase.js';
 import { Link, useNavigate } from 'react-router-dom';
@@ -11,21 +11,8 @@ const Login = () => {
   // Handle Google login redirect
   const handleGoogleLogin = async () => {
     setLoading(true);
-    try {
-      await signInWithRedirect(auth, googleProvider);
-    } catch (err) {
-      console.error('Error during redirect login:', err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // Retrieve result from redirect after the page reloads
-  useEffect(() => {
-    const fetchRedirectResult = async () => {
-      setLoading(true);
       try {
-        const result = await getRedirectResult(auth);
+        const result = await signInWithPopup(auth,googleProvider);
         if (result && result.user) {
           const user = result.user;
           const idToken = await user.getIdToken();
@@ -51,10 +38,10 @@ const Login = () => {
         setLoading(false);
         
       }
-    };
+  };
 
-    fetchRedirectResult();
-  }, []);
+  // Retrieve result from redirect after the page reloads
+
 
   return (
     <div>

@@ -26,6 +26,12 @@ useEffect(()=>{
       signOut(auth).then(() => {
       console.log('signed out')
  })
+    const response=await fetch("/api/user/logout",{method:"POST"})
+    if(!response.ok){
+throw new Error
+    }
+    const data=await response.json()
+    console.log(data)
     }
      catch(err){
       console.log(err.message)

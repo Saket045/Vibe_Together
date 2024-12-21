@@ -51,13 +51,7 @@ export const signup= async(req,res) =>{
      return res.status(500).json({message:error.message})
     }
  }
- //1 get the fields from the req object i.e. incoming request
- //2 check if the account exists by checking username and email....(User.findOne({field to be compared in model}))
- //3 generate salt through bcrypt
- //4 hash the password
- //5 create new user with the fields you got
- //6 if newUser created ,generate token for every unique user i.e. according to newUser._id 
- //7 now save the user
+
  export const login= async(req,res) =>{
      try{
          const { email, password } = req.body;
@@ -152,6 +146,7 @@ export const signup= async(req,res) =>{
  export const logout= async(req,res) =>{
      try {
          res.cookie("jwt", "", { maxAge: 0 });
+         res.clearCookie("jwt");
          res.status(200).json({ message: "Logged out successfully" });
      } catch (error) {
          console.log("Error in logout controller", error.message);
