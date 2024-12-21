@@ -83,38 +83,52 @@ export const signup= async(req,res) =>{
  }
 
  //Sign-Up
- export const googleApiCallback=async(req, res, next) =>{
-    const { idToken } = req.body;
-    try {
-      const decodedToken = await admin.auth().verifyIdToken(idToken);
-      const { email, picture } = decodedToken;
-  
-      let {fullname,phonenumber} = req.body;
-  
-      const generatedPassword = Math.random().toString(36).slice(-8) + Math.random().toString(36).slice(-8);
-     
-      const username = await generateUsername(User, fullname);
+ export const googleApiCallback = async (req, res, next) => {
+  const { idToken } = req.body;
 
-      const newUser=new User({
-        fullname,
-        username,
-        email,
-        phonenumber,
-        password: generatedPassword,
-        profileImg:picture
-      })
+  try {
+    // Verify the ID token and extract user details
+    const decodedToken = await admin.auth().verifyIdToken(idToken);
+    const { email, picture } = decodedToken;
 
-      generateTokenAndSetCookie(newUser._id, res);
-  
-      res.json({
-        success: true,
-        message: "Google Sign up successful",
-      });
-    } catch (err) {
-      next(err);
-    }
+    // Hardcoded values for demonstration (replace with actual request body values if needed)
+    const fullname = "Saket"; // Replace with `req.body.fullname` if passed from frontend
+    const phonenumber = "7880974597"; // Replace with `req.body.phonenumber` if passed from frontend
+    const username = "Saket"; // Replace with a generated username if needed
+
+    // Generate a random password
+    const generatedPassword = Math.random().toString(36).slice(-8) + Math.random().toString(36).slice(-8);
+
+    // Create a new User instance
+    const newUser = new User({
+      fullname,
+      username,
+      email,
+      phonenumber,
+      password: generatedPassword,
+      profileImg: picture,
+    });
+
+    // Save the new user to the database
+    await newUser.save();
+
+    // Generate a token and set it in the response cookie
+    generateTokenAndSetCookie(newUser._id, res);
+
+    // Respond with user details
+    res.json({
+      _id: newUser._id,
+      fullname: newUser.fullname,
+      username: newUser.username,
+      email: newUser.email,
+      phonenumber: newUser.phonenumber,
+    });
+  } catch (err) {
+    // Handle errors
+    next(err);
   }
- 
+};
+
 //Sign-In
  export const googleApi=async(req,res)=>{
     const {idToken}=req.body;
