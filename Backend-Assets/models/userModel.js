@@ -25,7 +25,16 @@ const userSchema=mongoose.Schema({
     profileImg:{
         type:String,
         default:""
-     }
+     },
+    communities:
+        [ { type:mongoose.Schema.Types.ObjectId,
+            ref: "Community"
+ } ],
+    createdAt:{
+         type:Date,
+         default:Date.now
+  }
+    
 },{timestamps:true}
 );
 
