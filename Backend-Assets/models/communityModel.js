@@ -22,8 +22,13 @@ const communitySchema = new mongoose.Schema({
          ref: 'User', required: true }, 
     members: [{ 
          type: mongoose.Schema.Types.ObjectId, 
-         ref: 'CommunityMember'
+         ref: 'CommunityMember',
+         required:true
          }], 
+     upcomingEvents:[{
+            type:mongoose.Schema.Types.ObjectId,
+            ref:'Event',
+     }],
     createdAt: { type: Date, default: Date.now },
   });
   

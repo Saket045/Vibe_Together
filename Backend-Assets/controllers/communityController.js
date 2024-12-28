@@ -1,6 +1,7 @@
 import User from "../models/userModel.js";
 import Community from "../models/communityModel.js";
 import CommunityMember from "../models/communityMembersModel.js";
+import Notification from "../models/notificationModel.js";
 
 export const createCommunity=async(req,res,next)=>{
     try{
@@ -27,9 +28,9 @@ export const createCommunity=async(req,res,next)=>{
         await adminMember.save();
 
         
-    await User.findByIdAndUpdate(userId, { $push: { communities: community._id } });
+        await User.findByIdAndUpdate(userId, { $push: { communities: community._id } });
 
-        community.members.push(adminMember._id);
+        community.members.push(userId);
         await community.save();
 
         res.status(200).json({"Community createed succesfully": community});
@@ -69,3 +70,165 @@ export const getCommunitiesBySearch=async(req,res)=>{
         return res.status(500).json(error);
     }
 }
+
+export const joinCommunity = async (req, res) => {
+    try {
+        // Extract user ID from authenticated request
+        const userId = req.user._id;
+
+        // Find the user by their ID
+        const user = await User.findById(userId);
+        if (!user) {
+            return res.status(404).json({ msg: "User does not exist" });
+        }
+
+        // Extract community name from request parameters
+        const { communityName } = req.params;
+
+        // Find the community by its name
+        const community = await Community.findOne({ communityName }); 
+        if (!community) {
+            return res.status(404).json({ msg: "Community does not exist" });
+        }
+
+        // Check if the user is already a member of the community
+        const existingMember = await CommunityMember.findOne({
+            community: community._id,
+            user: userId,
+        });
+
+        if (existingMember) {
+            return res.status(400).json({ msg: "User is already a member of this community" });
+        }
+
+        // Create a new community member record
+        const newMember = new CommunityMember({
+            community: community._id,
+            user: userId,
+            role: "Member",
+        });
+
+        await newMember.save();
+
+        // Update the community's members list
+        community.members.push(userId);
+        await community.save();
+
+        // Update the user's list of communities
+        await User.findByIdAndUpdate(userId, { $push: { communities: community._id } });
+
+        const newNotification=new Notification({
+            message:`${user.username} joined the community`,
+            type:"UserJoined",
+            community:community._id,
+            targetUsers:community.members.map(members=>members._id)
+        })
+        
+        await newNotification.save()
+
+        await User.updateMany(
+            {_id:{$in:community.members.map(members=>members._id)}},
+            {$push:{notifications:newNotification._id}});
+
+        res.status(200).json({ msg: "Joined community successfully", community });
+    } catch (error) {
+        return res.status(500).json({ error: error.message });
+    }
+};
+
+export const leaveCommunity = async (req, res) => {
+    try {
+        // Extract user ID from authenticated request
+        const userId = req.user._id;
+
+        // Find the user by their ID
+        const user = await User.findById(userId);
+        if (!user) {
+            return res.status(404).json({ msg: "User does not exist" });
+        }
+
+        // Extract community name from request parameters
+        const { communityName } = req.params;
+
+        // Find the community by its name
+        const community = await Community.findOne({ communityName });
+        if (!community) {
+            return res.status(404).json({ msg: "Community does not exist" });
+        }
+
+        // Check if the user is a member of the community
+        const existingMember = await CommunityMember.findOne({
+            community: community._id,
+            user: userId,
+        });
+
+        if (!existingMember) {
+            return res.status(400).json({ msg: "User is not a member of this community" });
+        }
+
+        // Remove the community member record
+        await CommunityMember.findByIdAndDelete(existingMember._id);
+
+        // Update the community's members list
+        community.members.pull(userId);
+        await community.save();
+
+        // Update the user's list of communities
+        user.communities.pull(community._id);
+        await user.save();
+
+const targetUsers=community.members.filter(communityMember=>communityMember._id.toString()!==userId.toString())
+                   .map(communityMember=>communityMember._id);
+
+        const newNotification=new Notification({
+            message:`${user.username} left the community`,
+            type:"UserLeft",
+            community:community._id,
+            targetUsers:targetUsers
+        })
+        
+        await newNotification.save();
+
+        await User.updateMany(
+            {_id:{$in:targetUsers}},
+            {$push:{notifications:newNotification._id}});
+
+        res.status(200).json({ msg: "Left community successfully", community });
+    } catch (error) {
+        return res.status(500).json({ error: error.message });
+    }
+};
+
+export const getCommunityByName=async(req,res)=>{
+    const {communityName}=req.params;
+    const community=await Community.findOne({communityName});
+    if(!community){
+        return res.status(404).json({msg:"Community does not exist"});
+    }
+    res.status(200).json({community});
+}
+
+export const getJoinedCommunities = async (req, res) => {
+    try {
+        const userId = req.user._id;
+
+        const user = await User.findById(userId);
+        if (!user) {
+            return res.status(404).json({ msg: "User does not exist" });
+        }
+
+        const communitiesJoined = await Community.find({ members: userId });
+
+        if (communitiesJoined.length === 0) {
+            return res.status(200).json({ msg: "No communities joined", communitiesJoined: [] });
+        }
+
+        return res.status(200).json({
+            msg: "Communities retrieved successfully",
+            count: communitiesJoined.length,
+            communitiesJoined,
+        });
+    } catch (err) {
+        return res.status(500).json({ error: err.message });
+    }
+};

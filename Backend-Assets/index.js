@@ -4,6 +4,7 @@ import dotenv from 'dotenv'
 import cookieParser from 'cookie-parser'
 import userRoute from './routes/userRoute.js'
 import communityRoute from './routes/communityRoute.js'
+import eventRoute from './routes/eventRoute.js'
 import connectToMongoDB from './database/connectToMongoDB.js'
 dotenv.config()
 const app=express();
@@ -16,6 +17,7 @@ app.use(express.json())
 
 app.use("/api/user",userRoute);
 app.use("/api/community",communityRoute);
+app.use("/api/event",eventRoute);
 
 app.listen(PORT,()=>{
     console.log(`Server is running on port ${PORT}`);

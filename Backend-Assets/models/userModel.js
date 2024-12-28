@@ -30,6 +30,10 @@ const userSchema=mongoose.Schema({
         [ { type:mongoose.Schema.Types.ObjectId,
             ref: "Community"
  } ],
+    notifications:[{
+       type:mongoose.Schema.Types.ObjectId,
+       ref: "Notification"
+    }],
     createdAt:{
          type:Date,
          default:Date.now
