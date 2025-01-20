@@ -3,34 +3,31 @@ import React, { useEffect } from 'react'
 import { auth,onAuthStateChanged } from '../firebase/firebase.js'
 import { signOut } from 'firebase/auth'
 import {useNavigate} from 'react-router-dom'
+import { useSelector } from 'react-redux'
+import { useDispatch } from 'react-redux'
+import { logout,setUser } from '../redux/slices/userSlice.js'
 
 const Home = () => {
- 
-   const navigate=useNavigate();
-
-useEffect(()=>{
-  onAuthStateChanged(auth,(user)=>{
-    if(!user){
-      navigate('/login')
-    }
-    // else{
-    //  here we call the user
-    // }
-  })
-},[])
   
-
+  const dispatch=useDispatch();
+ 
   const handleLogout=async()=>{
-   
       try {
       signOut(auth).then(() => {
       console.log('signed out')
  })
-    const response=await fetch("/api/user/logout",{method:"POST"})
+    const response=await fetch("/api/user/logout",{method:"POST"});
     if(!response.ok){
 throw new Error
     }
-    const data=await response.json()
+    const data=await response.json();
+    dispatch(setUser({
+      email:"",
+      phonenumber:"",
+      username:"",
+      _id:"",
+    }));
+    dispatch(logout());
     console.log(data)
     }
      catch(err){
@@ -40,9 +37,6 @@ throw new Error
 
   return (
     <div>
-
-
-
       Home
       <button onClick={handleLogout}>Logout</button>
     </div>
