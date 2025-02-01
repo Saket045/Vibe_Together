@@ -1,0 +1,29 @@
+.logo {
+    font-size: 1rem; /* Default for mobile */
+    font-weight: bold;
+    color: #4f46e5; /* Indigo */
+    letter-spacing: 2px;
+    transition: transform 0.3s ease-in-out;
+  }
+  
+  .at-symbol {
+    color: #ec4899; /* Pink */
+  }
+  
+  .logo:hover {
+    transform: scale(1.05);
+  }
+  
+  /* Responsive Design */
+  @media (min-width: 768px) {
+    .logo {
+      font-size: 1.5rem;
+    }
+  }
+  
+  @media (min-width: 1024px) {
+    .logo {
+      font-size: 1.5rem;
+    }
+  }
+  
