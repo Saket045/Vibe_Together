@@ -210,3 +210,57 @@ try {
     return res.status(500).json({ message: "Internal server error" });
 }
 }
+
+export const yourEvents=async(req,res)=>{
+    try{
+        const userId = req.user._id;
+
+const yourCommunities = await Community.find({ creator: userId });
+if (!yourCommunities || yourCommunities.length === 0) {
+  return res.json({ msg: "You don't have communities" });
+}
+const yourEventIds = yourCommunities.flatMap(community => community.upcomingEvents);
+console.log(yourEventIds);
+
+if (yourEventIds.length === 0) {
+  return res.status(200).json({ msg: "No events" });
+}
+const events = await Event.find({ _id: { $in: yourEventIds } });
+
+if (!events || events.length === 0) {
+  return res.status(404).json({ msg: "No events found" });
+}
+
+return res.json(events); 
+
+    }
+    catch(err){
+        throw err;
+    }
+}
+
+export const allEvents=async(req,res)=>{
+    try{
+        const allEvents=await Event.find();
+        if(!allEvents)
+            return res.json({msg:"No events"});
+        return res.status(200).json(allEvents);
+    }
+    catch(err){
+        throw err;
+    }
+}
+
+export const scheduledEvents=async(req,res)=>{
+    try{
+        const userId=req.user._id;
+        const scheduledEvents=await Event.find({registeredBy:userId});
+        if(!scheduledEvents){
+            return res.status(200).json({msg:"No events"});
+        }
+        return res.status(200).json(scheduledEvents);
+    }
+    catch(err){
+        throw err;
+    }
+}

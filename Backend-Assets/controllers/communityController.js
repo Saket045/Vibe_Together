@@ -73,20 +73,17 @@ export const getCommunitiesBySearch=async(req,res)=>{
 
 export const joinCommunity = async (req, res) => {
     try {
-        // Extract user ID from authenticated request
         const userId = req.user._id;
-
-        // Find the user by their ID
+        const { communityName } = req.params;
+        console.log(communityName);
         const user = await User.findById(userId);
         if (!user) {
             return res.status(404).json({ msg: "User does not exist" });
         }
-
-        // Extract community name from request parameters
-        const { communityName } = req.params;
+       
 
         // Find the community by its name
-        const community = await Community.findOne({ communityName }); 
+        const community = await Community.findOne({ name:communityName }); 
         if (!community) {
             return res.status(404).json({ msg: "Community does not exist" });
         }
@@ -108,7 +105,7 @@ export const joinCommunity = async (req, res) => {
             role: "Member",
         });
 
-        await newMember.save();
+       
 
         // Update the community's members list
         community.members.push(userId);
@@ -116,7 +113,7 @@ export const joinCommunity = async (req, res) => {
 
         // Update the user's list of communities
         await User.findByIdAndUpdate(userId, { $push: { communities: community._id } });
-
+        await newMember.save();
         const newNotification=new Notification({
             message:`${user.username} joined the community`,
             type:"UserJoined",
@@ -217,18 +214,30 @@ export const getJoinedCommunities = async (req, res) => {
             return res.status(404).json({ msg: "User does not exist" });
         }
 
-        const communitiesJoined = await Community.find({ members: userId });
+        const communitiesJoined = await Community.find({ members: userId , creator:{$ne:userId}});
+
+    
 
         if (communitiesJoined.length === 0) {
             return res.status(200).json({ msg: "No communities joined", communitiesJoined: [] });
         }
 
-        return res.status(200).json({
-            msg: "Communities retrieved successfully",
-            count: communitiesJoined.length,
-            communitiesJoined,
-        });
+        return res.status(200).json(communitiesJoined);
     } catch (err) {
         return res.status(500).json({ error: err.message });
     }
 };
+
+export const getYourCommunities = async (req,res)=>{
+    try{
+      const userId=req.user._id;
+      const yourCommunities=await Community.find({creator:userId});
+      if(!yourCommunities)
+        return res.json({msg:"You dont have communities"});
+    return res.json(yourCommunities);
+}
+catch(err){
+    return res.status(500).json({err:err.message});
+}
+      
+}
