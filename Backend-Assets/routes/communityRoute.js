@@ -7,7 +7,7 @@ router.post("/createCommunity", protectRoute ,createCommunity);
 router.get("/getAllCommunities", protectRoute ,getAllCommunities);
 router.get("/getCommunitiesBySearch", protectRoute ,getCommunitiesBySearch);
 router.post("/joinCommunity/:communityName", protectRoute ,joinCommunity);
-router.post("/leaveCommunity/:name", protectRoute ,leaveCommunity);
+router.post("/leaveCommunity/:communityName", protectRoute ,leaveCommunity);
 router.get("/getCommunityByName/:name", protectRoute ,getCommunityByName);
 router.get("/getJoinedCommunities", protectRoute ,getJoinedCommunities);
 router.get("/getYourCommunities", protectRoute ,getYourCommunities);

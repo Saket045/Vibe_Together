@@ -1,3 +1,0 @@
-//yourEvents
-//scheduleEvents
-//allEvents

@@ -3,7 +3,7 @@ import { persistReducer, persistStore } from "redux-persist";
 import storage from "redux-persist/lib/storage";
 import authReducer from "./slices/userSlice.js";
 import communityReducer from "./slices/communitySlice.js";
-
+import eventReducer from "./slices/eventSlice.js"
 const persistConfig = {
   key: "main-root",
   storage,
@@ -15,6 +15,7 @@ const store = configureStore({
   reducer: {
     auth: persistedReducer,
     communities: communityReducer,
+    events:eventReducer
   },
 });
 

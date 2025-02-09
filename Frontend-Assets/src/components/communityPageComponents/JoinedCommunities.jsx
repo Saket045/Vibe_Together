@@ -74,7 +74,6 @@ const JoinedCommunities = () => {
     if(joinedCommunities.data.length===0)
     dispatch(fetchJoinedCommunities());
   },[dispatch,joinedCommunities.data])
-
   if (status === 'loading') return <p>Loading...</p>;
   if (status === 'failed') return <p>Error: {error}</p>;
 

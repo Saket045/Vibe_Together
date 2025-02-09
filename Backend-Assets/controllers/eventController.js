@@ -9,14 +9,14 @@ export const createEvent=async(req,res)=>{
         const {name,description,category,eventType,location,date,startTime}=req.body;
        
         const userId=req.user._id;
-        const {communityName}=req.params;
+        const {eventName}=req.params;
 
         const user=await User.findById(userId);
 
         if(!user){
             return res.status(404).json({message:"User not found"});
         }
-        const community=await Community.findOne({name:communityName});
+        const community=await Community.findOne({name:eventName});
 
         if(!community){
             return res.status(404).json({message:"Community not found"});
@@ -144,7 +144,6 @@ export const unregisterFromEvent=async(req,res)=>{
         await User.updateMany(
             {_id:{$in:community.members.map(members=>members._id)}},
             {$push:{notifications:newNotification._id}});
-           event.registeredBy.push(userId);
         return res.status(200).json({msg:"Unregistered from event"});
     }
     catch(err){
@@ -215,11 +214,11 @@ export const yourEvents=async(req,res)=>{
     try{
         const userId = req.user._id;
 
-const yourCommunities = await Community.find({ creator: userId });
-if (!yourCommunities || yourCommunities.length === 0) {
-  return res.json({ msg: "You don't have communities" });
+const yourEvents = await Community.find({ creator: userId });
+if (!yourEvents || yourEvents.length === 0) {
+  return res.json({ msg: "You don't have Events" });
 }
-const yourEventIds = yourCommunities.flatMap(community => community.upcomingEvents);
+const yourEventIds = yourEvents.flatMap(community => community.upcomingEvents);
 console.log(yourEventIds);
 
 if (yourEventIds.length === 0) {
@@ -241,10 +240,14 @@ return res.json(events);
 
 export const allEvents=async(req,res)=>{
     try{
+        const userId=req.user._id;
         const allEvents=await Event.find();
         if(!allEvents)
             return res.json({msg:"No events"});
-        return res.status(200).json(allEvents);
+        const Events=await Community.find({creator:{$ne:userId}});
+
+        const showEvents =await Event.find({organizedBy:[...Events]})
+        return res.status(200).json(showEvents);
     }
     catch(err){
         throw err;
@@ -262,5 +265,26 @@ export const scheduledEvents=async(req,res)=>{
     }
     catch(err){
         throw err;
+    }
+}
+
+export const getEventsBySearch=async(req,res)=>{
+    try{
+        const eventName = req.query.search;
+        const resultEvents= await Event.find({
+            $or:[
+                {name:{$regex:'.*'+eventName+'.*',$options:'i'}},
+                {category:{$regex:'.*'+eventName+'.*',$options:'i'}},
+                {location:{$regex:'.*'+eventName+'.*',$options:'i'}}
+            ]
+        })
+
+      if(!resultEvents) return res.json({"Result":"No Events found"});
+
+      return res.status(200).json(resultEvents);
+
+    }
+    catch(error){
+        return res.status(500).json(error);
     }
 }

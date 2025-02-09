@@ -14,7 +14,9 @@ const initialState = {
 const communitiesDataSlice = createSlice({
   name: "communities",
   initialState,
-  reducers: {},
+  reducers: {
+    
+  },
   extraReducers: (builder) => {
     builder
       //yourCommunities

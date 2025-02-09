@@ -1,66 +1,80 @@
+import { useDispatch,useSelector } from "react-redux";
+import { fetchYourEvents } from "../../redux/thunks/eventThunk.js";
+import { useEffect } from "react";
 const LeftComponent = () => {
-    const communities = [
-        {
-          communityName: "Tech Enthusiasts",
-          category: "Technology",
-          membersJoined: 1500,
-          profileImage: "https://www.w3schools.com/w3images/avatar2.png"
-        },
-        {
-          communityName: "Fitness Freaks",
-          category: "Health & Fitness",
-          membersJoined: 1200,
-          profileImage: "https://www.w3schools.com/w3images/avatar6.png"
-        },
-        {
-          communityName: "Book Lovers",
-          category: "Literature",
-          membersJoined: 900,
-          profileImage: "https://www.w3schools.com/w3images/avatar5.png"
-        },
-        {
-          communityName: "Travel Explorers",
-          category: "Travel",
-          membersJoined: 1800,
-          profileImage: "https://www.w3schools.com/w3images/avatar4.png"
-        },
-        {
-          communityName: "Foodies Hub",
-          category: "Food",
-          membersJoined: 2000,
-          profileImage: "https://www.w3schools.com/w3images/avatar3.png"
-        },
-        {
-          communityName: "Tech Enthusiasts",
-          category: "Technology",
-          membersJoined: 1500,
-          profileImage: "https://www.w3schools.com/w3images/avatar2.png"
-        },
-        {
-          communityName: "Fitness Freaks",
-          category: "Health & Fitness",
-          membersJoined: 1200,
-          profileImage: "https://www.w3schools.com/w3images/avatar6.png"
-        },
-        {
-          communityName: "Book Lovers",
-          category: "Literature",
-          membersJoined: 900,
-          profileImage: "https://www.w3schools.com/w3images/avatar5.png"
-        },
-        {
-          communityName: "Travel Explorers",
-          category: "Travel",
-          membersJoined: 1800,
-          profileImage: "https://www.w3schools.com/w3images/avatar4.png"
-        },
-        {
-          communityName: "Foodies Hub",
-          category: "Food",
-          membersJoined: 2000,
-          profileImage: "https://www.w3schools.com/w3images/avatar3.png"
-        }
-      ];
+const dispatch=useDispatch();
+  const  { yourEvents, status, error }  = useSelector((state) => state.events);
+
+  useEffect(()=>{
+    if(yourEvents.data.length===0)
+    dispatch(fetchYourEvents());
+  },[dispatch,yourEvents.data])
+
+  if (status === 'loading') return <p>Loading...</p>;
+  if (status === 'failed') return <p>Error: {error}</p>;
+  
+    // const Events = [
+    //     {
+    //       name: "Tech Enthusiasts",
+    //       category: "Technology",
+    //       membersJoined: 1500,
+    //       profileImage: "https://www.w3schools.com/w3images/avatar2.png"
+    //     },
+    //     {
+    //       name: "Fitness Freaks",
+    //       category: "Health & Fitness",
+    //       membersJoined: 1200,
+    //       profileImage: "https://www.w3schools.com/w3images/avatar6.png"
+    //     },
+    //     {
+    //       name: "Book Lovers",
+    //       category: "Literature",
+    //       membersJoined: 900,
+    //       profileImage: "https://www.w3schools.com/w3images/avatar5.png"
+    //     },
+    //     {
+    //       name: "Travel Explorers",
+    //       category: "Travel",
+    //       membersJoined: 1800,
+    //       profileImage: "https://www.w3schools.com/w3images/avatar4.png"
+    //     },
+    //     {
+    //       name: "Foodies Hub",
+    //       category: "Food",
+    //       membersJoined: 2000,
+    //       profileImage: "https://www.w3schools.com/w3images/avatar3.png"
+    //     },
+    //     {
+    //       name: "Tech Enthusiasts",
+    //       category: "Technology",
+    //       membersJoined: 1500,
+    //       profileImage: "https://www.w3schools.com/w3images/avatar2.png"
+    //     },
+    //     {
+    //       name: "Fitness Freaks",
+    //       category: "Health & Fitness",
+    //       membersJoined: 1200,
+    //       profileImage: "https://www.w3schools.com/w3images/avatar6.png"
+    //     },
+    //     {
+    //       name: "Book Lovers",
+    //       category: "Literature",
+    //       membersJoined: 900,
+    //       profileImage: "https://www.w3schools.com/w3images/avatar5.png"
+    //     },
+    //     {
+    //       name: "Travel Explorers",
+    //       category: "Travel",
+    //       membersJoined: 1800,
+    //       profileImage: "https://www.w3schools.com/w3images/avatar4.png"
+    //     },
+    //     {
+    //       name: "Foodies Hub",
+    //       category: "Food",
+    //       membersJoined: 2000,
+    //       profileImage: "https://www.w3schools.com/w3images/avatar3.png"
+    //     }
+    //   ];
   return (
     <div className=" ">
     <div className="w-[65vh] flex flex-col">
@@ -72,20 +86,20 @@ const LeftComponent = () => {
         </div>
       </div>
       <div className="flex-1 flex flex-col items-center justify-center text-white text-lg font-bold mr-4 ml-2">
-        {/* Left Bottom Component */}
+       
         <div className="w-full p-4  bg-gradient-to-rounded-lg shadow-lg">
           <h3 className="text-2xl font-bold text-black mb-8">Your events</h3>
-        
-          {/* Community List with scroll and height limit */}
+  
           <div className=" overflow-y-auto">
             <ul className="space-y-4">
-              {communities.map((community, index) => (
+              {yourEvents.data && yourEvents.data.map((event, index) => (
                 <li key={index} className="flex items-center space-x-4 p-3 bg-white rounded-lg shadow-md hover:bg-gray-100 transition duration-300">
-                  <img src={community.profileImage} alt={community.communityName} className="w-16 h-16 rounded-full object-cover" />
+                  <img src={"https://www.w3schools.com/w3images/avatar6.png"} alt={event.name} className="w-16 h-16 rounded-full object-cover" />
                   <div className="flex flex-col">
-                    <h4 className="text-lg font-semibold text-gray-800">{community.communityName}</h4>
-                    <p className="text-sm text-gray-500">{community.category}</p>
-                    <p className="text-xs text-gray-400">{community.membersJoined} members</p>
+                    <h4 className="text-lg font-semibold text-gray-800">{event.name}</h4>
+                    <p className="text-sm text-gray-500">{event.category}</p>
+                    <p className="text-sm text-gray-500">{event.location}</p>
+                    <p className="text-xs text-gray-400">{event.registeredBy.length} registered</p>
                   </div>
                 </li>
               ))}

@@ -42,7 +42,9 @@ export const createCommunity=async(req,res,next)=>{
 
 export const getAllCommunities =async(req,res)=>{
     try{
-        const communities = await Community.find().populate("members").populate("creator");
+        const userId=req.user._id;
+        const communities = await Community.find({creator:{$ne:userId}}).populate("creator");
+        
         return res.status(200).json(communities);
     }
     catch(error){
@@ -148,7 +150,7 @@ export const leaveCommunity = async (req, res) => {
         const { communityName } = req.params;
 
         // Find the community by its name
-        const community = await Community.findOne({ communityName });
+        const community = await Community.findOne({ name:communityName });
         if (!community) {
             return res.status(404).json({ msg: "Community does not exist" });
         }

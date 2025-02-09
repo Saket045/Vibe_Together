@@ -1,5 +1,5 @@
 import { useDispatch,useSelector } from "react-redux";
-import { fetchYourCommunities } from "../../redux/thunks/communityThunk";
+import { fetchYourCommunities } from "../../redux/thunks/communityThunk.js";
 import { useEffect } from "react";
 const CreateCommunityNav = () => {
 
