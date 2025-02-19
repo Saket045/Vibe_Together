@@ -12,6 +12,9 @@ const eventSchema=mongoose.Schema({
         type:String,
         required:true
     },
+    profileImg:{
+        type:String
+    },
     eventType:{
         type:String,
         enum:['Online','Offline'],
@@ -23,7 +26,7 @@ const eventSchema=mongoose.Schema({
             return this.eventType==='Offline'
         }
     },
-    date:{
+    startDate:{
        type:String,
        required:true
     },
@@ -31,6 +34,10 @@ const eventSchema=mongoose.Schema({
         type:String,
         required:true
     },
+    combinedDateTime:{
+        type:Date
+    }
+    ,
     registeredBy:[{
         type:mongoose.Schema.Types.ObjectId,
         ref:'User'

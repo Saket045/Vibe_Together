@@ -94,7 +94,7 @@ const dispatch=useDispatch();
             <ul className="space-y-4">
               {yourEvents.data && yourEvents.data.map((event, index) => (
                 <li key={index} className="flex items-center space-x-4 p-3 bg-white rounded-lg shadow-md hover:bg-gray-100 transition duration-300">
-                  <img src={"https://www.w3schools.com/w3images/avatar6.png"} alt={event.name} className="w-16 h-16 rounded-full object-cover" />
+                  <img src={event.profileImg ? event.profileImg:"https://www.w3schools.com/w3images/avatar6.png"} alt={event.name} className="w-16 h-16 rounded-full object-cover" />
                   <div className="flex flex-col">
                     <h4 className="text-lg font-semibold text-gray-800">{event.name}</h4>
                     <p className="text-sm text-gray-500">{event.category}</p>

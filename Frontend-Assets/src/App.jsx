@@ -14,6 +14,7 @@ import Contact from './Pages/contact/Contact.jsx'
 import Navbar from './Pages/HomeContent/Navbar.jsx'
 import Footer from './Pages/HomeContent/Footer.jsx'
 import { useSelector } from 'react-redux'
+import CommunityModal from './components/modals/CommunityModal.jsx'
 const App = () => {
 
 const location = useLocation();
@@ -30,6 +31,7 @@ const showBars=location.pathname!=="/login" && location.pathname!=="/signup"
       <Route path='/eventPage'element={ <Event/>}/>
       <Route path='/profilePage'element={ <Profile/>}/>
       <Route path='/contactPage'element={<Contact/>}/>
+      <Route path='/createCommunity' element={<CommunityModal/>}/>
       </Routes>
     </div>
   )

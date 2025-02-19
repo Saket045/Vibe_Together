@@ -71,7 +71,6 @@ const SearchCommunities = () => {
 const user=useSelector((state)=>state.auth.user);
 const dispatch=useDispatch();
   const  { allCommunities:communities, status, error }  = useSelector((state) => state.communities);
- 
   const [searchedResults,setSearchedResults]=useState(communities?.data);
   
   useEffect(()=>{
@@ -100,6 +99,14 @@ const dispatch=useDispatch();
        throw new Error(`HTTP error! Status: ${response.status}`);
      }
      const data = await response.json();
+     setSearchedResults((prevResults) =>
+      prevResults.map((comm) =>
+        comm.name === communityName
+          ? { ...comm, members: [...comm.members, user._id] } // Create a new object with updated members
+          : comm
+      )
+    );
+    
      dispatch(fetchJoinedCommunities())
      return data;
    } catch (error) {

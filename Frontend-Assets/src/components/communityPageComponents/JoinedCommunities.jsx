@@ -1,6 +1,7 @@
 import { useDispatch,useSelector } from "react-redux";
 import { fetchJoinedCommunities } from "../../redux/thunks/communityThunk";
 import { useEffect } from "react";
+import { setPage, setShow } from "../../redux/slices/pageSlice";
 
 // const communities = [
 //   {
@@ -77,6 +78,12 @@ const JoinedCommunities = () => {
   if (status === 'loading') return <p>Loading...</p>;
   if (status === 'failed') return <p>Error: {error}</p>;
 
+  const handleDirect = (name) => {
+    dispatch(setShow(true))
+  dispatch(setPage(name)); // Use the new value directly
+};
+
+
   return (
     <div className='flex flex-col h-screen w-[60vh]'>
       {/* Heading */}
@@ -90,19 +97,19 @@ const JoinedCommunities = () => {
       </div>
 
       {/* Community List */}
-      <div className="space-y-4">
+      <div className="space-y-4 " >
         {joinedCommunities && joinedCommunities.data.map((community, index) => (
           <div
-            key={index}
+            key={index} onClick={()=>handleDirect(community.name)}
             className="flex items-center p-4 bg-white rounded-lg shadow-md hover:bg-gray-50 transition duration-300"
           >
-            <img
+            <img 
               src={"https://www.w3schools.com/w3images/avatar6.png"}
               alt={community.name}
               className="w-16 h-16 rounded-full object-cover"
             />
             <div className="ml-4">
-              <h4 className="text-lg font-semibold text-gray-800">{community.name}</h4>
+              <h4 className="text-lg font-semibold text-gray-800 cursor-auto" >{community.name}</h4>
               <p className="text-xs text-gray-400">{community.members.length} members</p>
             </div>
           </div>

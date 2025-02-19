@@ -3,24 +3,32 @@ import Community from "../models/communityModel.js";
 import Event from "../models/eventModel.js";
 import CommunityMember from "../models/communityMembersModel.js";
 import Notification from "../models/notificationModel.js";
+import { v2 as cloudinary } from "cloudinary";
 
 export const createEvent=async(req,res)=>{
     try{
-        const {name,description,category,eventType,location,date,startTime}=req.body;
-       
+        const { name, description, category, eventType, location, startDate , startTime } = req.body;
+        let { profileImg } = req.body;    
         const userId=req.user._id;
-        const {eventName}=req.params;
+        const {communityName}=req.params;
 
         const user=await User.findById(userId);
 
         if(!user){
             return res.status(404).json({message:"User not found"});
         }
-        const community=await Community.findOne({name:eventName});
+
+        let combinedDateTime = `${startDate}T${startTime}:00+05:30`;
+        const community=await Community.findOne({name:communityName});
 
         if(!community){
             return res.status(404).json({message:"Community not found"});
         }
+
+        if (profileImg) {
+			const uploadedResponse = await cloudinary.uploader.upload(profileImg);
+			profileImg = uploadedResponse.secure_url;
+		}
 
         const communityMember=await CommunityMember.findOne({$and:[{community:community._id},{role:"Admin"},{user:userId}]});
 
@@ -37,9 +45,11 @@ export const createEvent=async(req,res)=>{
             category,
             eventType,
             location,
-            date,
+            profileImg,
+            startDate,
             startTime,
-            organizedBy:community._id
+            combinedDateTime,
+            organizedBy: community._id,
         })
          await event.save();   
 
@@ -288,3 +298,4 @@ export const getEventsBySearch=async(req,res)=>{
         return res.status(500).json(error);
     }
 }
+

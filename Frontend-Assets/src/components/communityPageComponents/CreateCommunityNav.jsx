@@ -1,6 +1,8 @@
 import { useDispatch,useSelector } from "react-redux";
 import { fetchYourCommunities } from "../../redux/thunks/communityThunk.js";
 import { useEffect } from "react";
+import {Link} from 'react-router-dom';
+
 const CreateCommunityNav = () => {
 
   // const communities = [
@@ -85,7 +87,7 @@ const CreateCommunityNav = () => {
           <div className="w-full max-w-sm pl-8">
             <h2 className="text-xl font-bold">Welcome</h2>
             <p className="text-gray-600 mt-2">Create your own community <br />and connect with others.</p>
-            <button className="mt-4 bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600">Create Community</button>
+           <button className="mt-4 bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600"> <Link to={"/createCommunity"} >Create Community</Link></button>
           </div>
         </div>
         <div className="flex-1 flex flex-col items-center justify-center text-white text-lg font-bold mr-4 ml-2">
@@ -98,7 +100,7 @@ const CreateCommunityNav = () => {
               <ul className="space-y-4">
                 {yourCommunities.data && yourCommunities.data?.map((community, index) => (
                   <li key={index} className="flex items-center space-x-4 p-3 bg-white rounded-lg shadow-md hover:bg-gray-100 transition duration-300">
-                    <img src={"https://www.w3schools.com/w3images/avatar2.png"} alt={community.name} className="w-16 h-16 rounded-full object-cover" />
+                    <img src={community.profileImg ? community.profileImg : "https://www.w3schools.com/w3images/avatar2.png"} alt={community.name} className="w-16 h-16 rounded-full object-cover" />
                     <div className="flex flex-col">
                       <h4 className="text-lg font-semibold text-gray-800">{community.name}</h4>
                       <p className="text-sm text-gray-500">{community.category}</p>

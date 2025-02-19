@@ -2,20 +2,41 @@ import User from "../models/userModel.js";
 import Community from "../models/communityModel.js";
 import CommunityMember from "../models/communityMembersModel.js";
 import Notification from "../models/notificationModel.js";
+import { v2 as cloudinary } from "cloudinary";
 
 export const createCommunity=async(req,res,next)=>{
     try{
-        const {name,description,location,category} = req.body;
+        const {name,category,description} = req.body;     
+        let {profileImg}=req.body;
         const userId=req.user._id;
         const user=await User.findById(userId);
         if(!user) return res.json({msg:"User not exists"});
         const communityCheck = await Community.findOne({name});
         if(communityCheck) return res.json({msg:"Name already exists"});
+
+        if (profileImg) {
+            const uploadAndCompressImage = async (image) => {
+                try {
+                  const result = await cloudinary.uploader.upload(image, {
+                    transformation: [
+                      { width: 800, quality: 'auto', fetch_format: 'auto' },
+                    ]
+                  }); 
+                  return result.secure_url;
+                } catch (error) {
+                  console.error('Error uploading and compressing image:', error);
+                }
+              };
+              
+            profileImg=await uploadAndCompressImage(profileImg);
+           
+		}
+
         const community = new Community({
             name,
             description,
-            location,
             category,
+            profileImg,
             creator:userId,
         })
         await community.save();
